@@ -29,18 +29,30 @@ class HJReadParser: NSObject {
      
      - parameter url: 本地小说文本URL
      
-     - parameter isSave: 是否
+     - parameter complete: 解析成功返回true  包含了返回false
      
      - returns: 解析出来的模型
      */
-    class func separateLocalURL(url:NSURL) {
+    class func separateLocalURL(url:NSURL,complete:((isOK:Bool)->Void)?) {
         
         if !KeyedIsExistArchiver(HJReadParser.GetBookName(url)) {
             
-            // 阅读模型
-            let readModel = HJReadModel.readModelWithLocalBook(url)
+            dispatch_async(dispatch_get_global_queue(0, 0)) {
+                
+                // 阅读模型
+                let readModel = HJReadModel.readModelWithLocalBook(url)
+                
+                HJReadModel.updateReadModel(readModel, fileName: readModel.bookID)
+                
+                dispatch_async(dispatch_get_main_queue(), {()->() in
+                    
+                    if complete != nil {complete!(isOK:true)}
+                })
+            }
             
-            HJReadModel.updateReadModel(readModel, fileName: readModel.bookID)
+        }else{
+            
+            if complete != nil {complete!(isOK:false)}
         }
     }
     

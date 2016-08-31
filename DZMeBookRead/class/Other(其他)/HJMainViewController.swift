@@ -31,6 +31,7 @@ class HJMainViewController: UIViewController {
         
         let fileURL = NSBundle.mainBundle().URLForResource("求魔", withExtension: "txt")
         
+        
         let readVC = HJReadPageController()
         
         dispatch_async(dispatch_get_global_queue(0, 0)) {
